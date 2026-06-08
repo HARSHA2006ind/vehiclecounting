@@ -47,6 +47,74 @@ colors = np.random.randint(
 
 print("YOLO Loaded Successfully!")
 
+
+def postProcess(outputs, img):
+
+    height, width = img.shape[:2]
+
+    boxes = []
+    classIds = []
+    confidence_scores = []
+
+    for output in outputs:
+        for det in output:
+
+            scores = det[5:]
+            classId = np.argmax(scores)
+            confidence = scores[classId]
+
+            if classId in required_class_index:
+
+                if confidence > confThreshold:
+
+                    w = int(det[2] * width)
+                    h = int(det[3] * height)
+
+                    x = int((det[0] * width) - w / 2)
+                    y = int((det[1] * height) - h / 2)
+
+                    boxes.append([x, y, w, h])
+                    classIds.append(classId)
+                    confidence_scores.append(float(confidence))
+
+    indices = cv2.dnn.NMSBoxes(
+        boxes,
+        confidence_scores,
+        confThreshold,
+        nmsThreshold
+    )
+
+    if len(indices) > 0:
+
+        for i in indices.flatten():
+
+            x, y, w, h = boxes[i]
+
+            color = [int(c) for c in colors[classIds[i]]
+
+            ]
+
+            name = classNames[classIds[i]]
+
+            cv2.rectangle(
+                img,
+                (x, y),
+                (x + w, y + h),
+                color,
+                2
+            )
+
+            cv2.putText(
+                img,
+                name.upper(),
+                (x, y - 10),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.5,
+                color,
+                2
+            )
+
+
 # Open Video
 cap = cv2.VideoCapture("video.mp4")
 
@@ -62,7 +130,6 @@ while True:
 
     ih, iw, channels = img.shape
 
-    # Draw counting lines
     cv2.line(
         img,
         (0, middle_line_position),
@@ -87,7 +154,6 @@ while True:
         2
     )
 
-    # YOLO Processing
     input_size = 320
 
     blob = cv2.dnn.blobFromImage(
@@ -110,7 +176,7 @@ while True:
 
     outputs = net.forward(outputNames)
 
-    print("Objects detected:", len(outputs))
+    postProcess(outputs, img)
 
     cv2.imshow("Vehicle Detection", img)
 
