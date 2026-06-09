@@ -8,8 +8,8 @@ from tracker import *
 tracker = EuclideanDistTracker()
 
 # Detection confidence threshold
-confThreshold = 0.1
-nmsThreshold = 0.2
+confThreshold = 0.5
+nmsThreshold = 0.5
 
 # Middle cross line position
 middle_line_position = 225
@@ -55,8 +55,10 @@ def postProcess(outputs, img):
     boxes = []
     classIds = []
     confidence_scores = []
+    detection = []
 
     for output in outputs:
+
         for det in output:
 
             scores = det[5:]
@@ -90,9 +92,7 @@ def postProcess(outputs, img):
 
             x, y, w, h = boxes[i]
 
-            color = [int(c) for c in colors[classIds[i]]
-
-            ]
+            color = [int(c) for c in colors[classIds[i]]]
 
             name = classNames[classIds[i]]
 
@@ -114,6 +114,30 @@ def postProcess(outputs, img):
                 2
             )
 
+            detection.append([
+                x,
+                y,
+                w,
+                h,
+                required_class_index.index(classIds[i])
+            ])
+
+    boxes_ids = tracker.update(detection)
+
+    for box_id in boxes_ids:
+
+        x, y, w, h, vehicle_id, index = box_id
+
+        cv2.putText(
+            img,
+            str(vehicle_id),
+            (x, y - 30),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.6,
+            (0, 255, 0),
+            2
+        )
+
 
 # Open Video
 cap = cv2.VideoCapture("video.mp4")
@@ -130,6 +154,7 @@ while True:
 
     ih, iw, channels = img.shape
 
+    # Draw counting lines
     cv2.line(
         img,
         (0, middle_line_position),
