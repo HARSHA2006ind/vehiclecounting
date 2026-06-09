@@ -8,8 +8,8 @@ from tracker import *
 tracker = EuclideanDistTracker()
 
 # Detection confidence threshold
-confThreshold = 0.5
-nmsThreshold = 0.5
+confThreshold = 0.6
+nmsThreshold = 0.6
 
 # Middle cross line position
 middle_line_position = 225
