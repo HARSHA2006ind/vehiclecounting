@@ -130,7 +130,7 @@ The program will:
 
 ## 👨‍💻 Author
 
-**Harsha Vardhan**  
+**Harshavardhan**  
 B.Tech Artificial Intelligence and Machine Learning (AIML)  
 Rajalakshmi Institute of Technology, Chennai
 
