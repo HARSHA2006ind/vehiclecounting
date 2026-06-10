@@ -1,6 +1,7 @@
 import math
 
 class EuclideanDistTracker:
+
     def __init__(self):
         self.center_points = {}
         self.id_count = 0
@@ -25,8 +26,8 @@ class EuclideanDistTracker:
                     cy - pt[1]
                 )
 
-                # Increased from 25 to 70
-                if dist < 70:
+                # Reduced from 120
+                if dist < 60:
 
                     self.center_points[object_id] = (cx, cy)
 
@@ -44,10 +45,7 @@ class EuclideanDistTracker:
 
             if not same_object_detected:
 
-                self.center_points[self.id_count] = (
-                    cx,
-                    cy
-                )
+                self.center_points[self.id_count] = (cx, cy)
 
                 objects_bbs_ids.append([
                     x,
